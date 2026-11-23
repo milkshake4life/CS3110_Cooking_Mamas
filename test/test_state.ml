@@ -220,6 +220,13 @@ let shop_tests =
     ( "no shopping after the game ends" >:: fun _ ->
       assert_equal Game_over
         (err (Shop.buy "Line Cook" (play_all (apply_profit 1000 start)))) );
+    ( "game over is reported before other errors" >:: fun _ ->
+      (* Each of these would be a different error mid-game. *)
+      let t = play_all (ok (Shop.buy "Patio" (apply_profit 1000 start))) in
+      assert_equal Game_over (err (Shop.buy "Pizza" t));
+      assert_equal Game_over (err (Shop.buy "Patio" t));
+      assert_equal Game_over (err (Shop.upgrade "Ramen" t));
+      assert_equal Game_over (err (Shop.train 5 t)) );
   ]
 
 let () =

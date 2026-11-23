@@ -99,7 +99,7 @@ let train_cost (w : worker) = 40 + (20 * w.skill)
 let train_worker (w : worker) =
   { w with skill = min max_skill (w.skill + 1); speed = w.speed + 1; wage = w.wage + 5 }
 
-(* ---------- Applying purchases (added by Ethan) ---------- *)
+(* ---------- Applying purchases to the game state ---------- *)
 
 let new_game () =
   State.init ~money:starting_money ~recipes:starting_recipes
@@ -107,7 +107,13 @@ let new_game () =
 
 let ( let* ) = Result.bind
 
+(* [if_playing t f] is [Error Game_over] once the game has ended, else [f ()].
+   Checking this first means a finished game always reports [Game_over], rather
+   than [Not_found] or [Already_owned]. *)
+let if_playing t f = if State.is_over t then Error State.Game_over else f ()
+
 let buy name t =
+  if_playing t @@ fun () ->
   match find_item name with
   | None -> Error (State.Not_found (String.trim name))
   | Some item -> (
@@ -125,6 +131,7 @@ let buy name t =
           | Room r -> State.add_room r t))
 
 let upgrade name t =
+  if_playing t @@ fun () ->
   match
     List.find_opt
       (fun (r : recipe) -> normalize r.name = normalize name)
@@ -136,6 +143,7 @@ let upgrade name t =
       State.update_recipe r.name upgrade_recipe t
 
 let train i t =
+  if_playing t @@ fun () ->
   (* [List.nth_opt] raises on a negative index, so check that first. *)
   match if i < 0 then None else List.nth_opt (State.workers t) i with
   | None -> Error (State.Not_found (Printf.sprintf "worker #%d" (i + 1)))

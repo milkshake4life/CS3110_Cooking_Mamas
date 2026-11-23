@@ -61,9 +61,9 @@ val train_worker : State.worker -> State.worker
 
 (** {1 Applying purchases to the game state}
 
-    Added by Ethan to connect the catalog to [State.t]; Colin, please review.
-    Each function checks everything first and charges money only if the whole
-    action succeeds, so on [Error] the state is unchanged. *)
+    These connect the catalog to [State.t]. Each function checks everything
+    first and charges money only if the whole action succeeds,
+    so on [Error] the state is unchanged. *)
 
 val new_game : unit -> State.t
 (** [new_game ()] is day 1 with [starting_money], [starting_recipes],
@@ -73,18 +73,19 @@ val buy : string -> State.t -> (State.t, State.error) result
 (** [buy name t] buys the catalog item called [name] (ignoring case and
     surrounding whitespace): it pays the item's cost and adds the recipe to the
     menu, hires the worker, or builds the room.
-    Errors: [Not_found] if no catalog item has that name; [Already_owned] if it
+    Errors: [Game_over] after the last day (checked first); [Not_found] if no
+    catalog item has that name; [Already_owned] if it
     is a recipe already on the menu or a room already built; [Insufficient_funds]
-    if the player can't pay; [Game_over] after the last day. *)
+    if the player can't pay. *)
 
 val upgrade : string -> State.t -> (State.t, State.error) result
 (** [upgrade name t] pays [upgrade_cost r] and replaces the menu recipe [r]
     called [name] with [upgrade_recipe r].
-    Errors: [Not_found] if no menu recipe has that name; [Insufficient_funds];
-    [Game_over]. *)
+    Errors: [Game_over] after the last day (checked first); [Not_found] if no
+    menu recipe has that name; [Insufficient_funds]. *)
 
 val train : int -> State.t -> (State.t, State.error) result
 (** [train i t] pays [train_cost w] and replaces the [i]th worker [w] (0-based,
     in [State.workers t] order) with [train_worker w].
-    Errors: [Not_found] if there is no [i]th worker; [Insufficient_funds];
-    [Game_over]. *)
+    Errors: [Game_over] after the last day (checked first); [Not_found] if there
+    is no [i]th worker; [Insufficient_funds]. *)
