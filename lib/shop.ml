@@ -98,3 +98,47 @@ let train_cost (w : worker) = 40 + (20 * w.skill)
 
 let train_worker (w : worker) =
   { w with skill = min max_skill (w.skill + 1); speed = w.speed + 1; wage = w.wage + 5 }
+
+(* ---------- Applying purchases (added by Ethan) ---------- *)
+
+let new_game () =
+  State.init ~money:starting_money ~recipes:starting_recipes
+    ~workers:starting_workers ~base_seats
+
+let ( let* ) = Result.bind
+
+let buy name t =
+  match find_item name with
+  | None -> Error (State.Not_found (String.trim name))
+  | Some item -> (
+      (* Every catalog item has a cost, so this default is never used. *)
+      let cost = Option.value (item_cost item) ~default:0 in
+      (* Check ownership before paying, so a refused purchase costs nothing. *)
+      match item with
+      | Recipe r when State.has_recipe r.name t -> Error (State.Already_owned r.name)
+      | Room r when State.has_room r.name t -> Error (State.Already_owned r.name)
+      | _ -> (
+          let* t = State.spend cost t in
+          match item with
+          | Recipe r -> State.add_recipe r t
+          | Worker w -> State.hire w t
+          | Room r -> State.add_room r t))
+
+let upgrade name t =
+  match
+    List.find_opt
+      (fun (r : recipe) -> normalize r.name = normalize name)
+      (State.recipes t)
+  with
+  | None -> Error (State.Not_found (String.trim name))
+  | Some r ->
+      let* t = State.spend (upgrade_cost r) t in
+      State.update_recipe r.name upgrade_recipe t
+
+let train i t =
+  (* [List.nth_opt] raises on a negative index, so check that first. *)
+  match if i < 0 then None else List.nth_opt (State.workers t) i with
+  | None -> Error (State.Not_found (Printf.sprintf "worker #%d" (i + 1)))
+  | Some w ->
+      let* t = State.spend (train_cost w) t in
+      State.update_worker i train_worker t
