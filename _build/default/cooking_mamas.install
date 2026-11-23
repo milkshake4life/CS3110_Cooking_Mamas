@@ -1,0 +1,11 @@
+lib: [
+  "_build/install/default/lib/cooking_mamas/META"
+  "_build/install/default/lib/cooking_mamas/dune-package"
+  "_build/install/default/lib/cooking_mamas/opam"
+]
+bin: [
+  "_build/install/default/bin/cooking_mamas"
+]
+doc: [
+  "_build/install/default/doc/cooking_mamas/README.md"
+]

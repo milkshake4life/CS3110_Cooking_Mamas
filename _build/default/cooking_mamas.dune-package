@@ -1,0 +1,4 @@
+(lang dune 3.24)
+(name cooking_mamas)
+(sections (lib .) (bin ../../bin) (doc ../../doc/cooking_mamas))
+(files (lib (META dune-package opam)) (bin (cooking_mamas)) (doc (README.md)))
