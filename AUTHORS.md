@@ -12,3 +12,8 @@ functions in `lib/shop.ml` and `lib/shop.mli` (`new_game`, `buy`, `upgrade`,
 `train`), and `test/test_state.ml` were written with help from Claude
 (Anthropic). Ethan Lee reviewed this code, checked the tests' expected values
 by hand, and is responsible for it.
+
+Parts of `lib/simulation.ml`, `lib/simulation.mli`, and
+`test/test_simulation.ml` were written with help from Gemini (Google).
+Cassidy Ng reviewed this code, verified the simulation formulas and test
+values by hand, and is responsible for it.

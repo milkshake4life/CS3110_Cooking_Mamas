@@ -51,6 +51,6 @@ play a full game yet.
 
 - `lib/state.ml(i)`: core types (recipes, workers, rooms) and the game state
 - `lib/shop.ml(i)`: the shop catalog, starting setup, and purchases
-- `lib/simulation.ml(i)`: simulating one day of business (in progress)
+- `lib/simulation.ml(i)`: simulating one day of business 
 - `bin/main.ml`: the 15-day game loop and terminal interface (in progress)
 - `test/`: OUnit test suites
