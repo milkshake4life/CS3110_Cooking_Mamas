@@ -1,1 +1,0 @@
-(* Day simulation & economy engine *)
